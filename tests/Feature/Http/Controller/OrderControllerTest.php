@@ -2,12 +2,14 @@
 
 namespace Tests\Feature\Http\Controller;
 
+use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class OrderControllerTest extends TestCase
 {
+    public $id;
     /**
      * A basic feature test example.
      *
@@ -22,20 +24,27 @@ class OrderControllerTest extends TestCase
             'address'   => 'Ромашковая 63 корпус 1'
         ];
         $response = $this->postJson('/api/order', $credentails);
-
         $response->assertCreated();
+        $this->id = json_decode($response->getContent())->id;
     }
 
     public function test_update()
     {
         $credentails = [
-            'fullname'  => 'Кузьмин Феликс Александрович',
+            'fullname'  => 'Кузьмин Александр Анатольевич',
             'phone'     => '79651218814',
-            'sum'       => 650,
-            'address'   => 'Ромашковая 63 корпус 1'
+            'sum'       => 350,
+            'address'   => 'Ромашковая 63 корпус 3'
         ];
-        $response = $this->putJson('/api/order', $credentails);
+        $response = $this->putJson('/api/order/' . Order::first()->id, $credentails);
+        //dd($response->getContent());
+        $response->assertOk();
+    }
 
-        $response->assertCreated();
+    public function test_destroy()
+    {
+        $response = $this->delete('/api/order/' . Order::first()->id);
+        //dd($response->getContent());
+        $response->assertOk();
     }
 }
