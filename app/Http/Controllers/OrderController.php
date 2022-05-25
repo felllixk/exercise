@@ -5,37 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    public function create()
+    public function index($id)
     {
-        //
+        return new OrderResource(Order::findOrFail($id));
     }
 
     public function store(StoreOrderRequest $request)
     {
-        return $request->store();
-    }
-
-    public function show(Order $order)
-    {
-        //
-    }
-
-    public function edit(Order $order)
-    {
-        //
+        return new OrderResource($request->store());
     }
 
     public function update(UpdateOrderRequest $request, Order $order)

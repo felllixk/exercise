@@ -28,23 +28,21 @@ class OrderControllerTest extends TestCase
         $this->id = json_decode($response->getContent())->id;
     }
 
-    public function test_update()
-    {
-        $credentails = [
-            'fullname'  => 'Кузьмин Александр Анатольевич',
-            'phone'     => '79651218814',
-            'sum'       => 350,
-            'address'   => 'Ромашковая 63 корпус 3'
-        ];
-        $response = $this->putJson('/api/order/' . Order::first()->id, $credentails);
-        //dd($response->getContent());
-        $response->assertOk();
-    }
+    // public function test_update()
+    // {
+    //     $credentails = [
+    //         'fullname'  => 'Кузьмин Александр Анатольевич',
+    //         'phone'     => '79651218814',
+    //         'sum'       => 350,
+    //         'address'   => 'Ромашковая 63 корпус 3'
+    //     ];
+    //     $response = $this->putJson('/api/order/' . Order::first()->id, $credentails);
+    //     $response->assertOk();
+    // }
 
-    public function test_destroy()
-    {
-        $response = $this->delete('/api/order/' . Order::first()->id);
-        //dd($response->getContent());
-        $response->assertOk();
-    }
+    // public function test_destroy()
+    // {
+    //     $response = $this->delete('/api/order/' . Order::first()->id);
+    //     $response->assertOk();
+    // }
 }
