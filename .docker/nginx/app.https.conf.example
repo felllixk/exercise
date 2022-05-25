@@ -1,0 +1,66 @@
+server_names_hash_bucket_size  64;
+server{
+    listen 80;
+    listen [::]:80;
+    server_name ${NGINX_HOST};
+
+    location ~ /.well-known/acme-challenge {
+        allow all;
+        root /var/www/;
+    }
+    
+    location / {
+        rewrite ^ https://$host$request_uri? permanent;
+    }
+}
+
+server {
+        listen 443 ssl http2;
+        listen [::]:443 ssl http2;
+
+        server_name ${NGINX_HOST};
+        index index.php index.html;
+        error_log  /var/log/nginx/error.log;
+        access_log /var/log/nginx/access.log;
+        root /var/www/;
+
+        
+        ssl_certificate /etc/cert/fullchain.pem;
+        ssl_certificate_key /etc/cert/privkey.pem;
+        
+        
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
+        add_header Content-Security-Policy "default-src * data: 'unsafe-eval' 'unsafe-inline'" always;
+
+
+        gzip on;
+        gzip_min_length 100;
+        gzip_comp_level 3;
+        gzip_types text/css;
+        gzip_types text/javascript;
+
+        client_max_body_size 100M;
+
+        location /mx7/ {
+            root /usr/out/;
+        }
+
+        location ~ \.php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass php_server:9000;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+        
+        location = /img2341{
+            auth_basic "Enter password!";
+            auth_basic_user_file /usr/out/$filename; 
+            # rename filename in your password file
+        }
+}

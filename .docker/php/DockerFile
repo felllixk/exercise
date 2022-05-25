@@ -1,0 +1,54 @@
+FROM php:8.0-fpm
+
+ARG PUBLIC_PATH=.
+
+USER root
+
+RUN apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libbz2-dev \
+        libmemcached-dev \ 
+        zlib1g-dev \
+        npm  \
+        curl \
+        wget \
+        libmcrypt-dev \
+        unzip \
+        libzip-dev \
+        git \
+        tidy \
+        libtidy-dev 
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --enable-gd
+RUN docker-php-ext-install -j$(nproc) pdo_mysql zip exif pcntl mysqli bz2 iconv gd tidy
+
+RUN pecl update-channels && pecl install mcrypt-1.0.4 && docker-php-ext-enable mcrypt
+# Куда же без composer'а.
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+
+
+
+
+WORKDIR /var/www
+COPY ${PUBLIC_PATH} /var/www/
+
+RUN mkdir /usr/out 
+
+RUN groupadd -g 1000 www 
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+RUN chmod 777 -R /usr/out
+RUN chmod 777 -R /var/www
+RUN chown -R www:www /usr/local/bin/composer
+
+USER www
+
+# COPY --chown=www:www ${PUBLIC_PATH} /usr/out
+
+# COPY --chown=www:www ${PUBLIC_PATH} /var/www
+
+CMD ["php-fpm"]
