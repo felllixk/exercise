@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOrderRequest extends FormRequest
@@ -24,7 +25,15 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'phone'     => ['required', 'string', 'size:11'],
+            'fullname'  => ['required', 'string', 'max:50'],
+            'sum'       => ['required', 'integer', 'min:100'],
+            'address'   => ['required', 'string'],
         ];
+    }
+
+    public function store()
+    {
+        Order::create($this->validated());
     }
 }
