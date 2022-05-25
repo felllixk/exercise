@@ -13,8 +13,17 @@ class UpdateOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'id' => $this->id
+        ]);
+    }
+
+
 
     /**
      * Get the validation rules that apply to the request.
@@ -24,7 +33,11 @@ class UpdateOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'id'        =>  ['required', 'integer', 'exists:orders'],
+            'phone'     =>  ['required', 'string', 'size:11'],
+            'fullname'  =>  ['required', 'string', 'max:50'],
+            'sum'       =>  ['required', 'integer', 'min:100'],
+            'address'   =>  ['required', 'string'],
         ];
     }
 }
